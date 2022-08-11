@@ -1,0 +1,79 @@
+module rtc(clk,rst,out1,out2,out3,out4,out); 
+input clk,rst; 
+output out; 
+reg out; 
+reg [5:0]sec;
+ reg [5:0]min; 
+output reg [0:6]out1; //1st seven segment 
+output reg [0:6]out2; //2nd seven segment 
+output reg [0:6]out3; //3rd seven segment 
+output reg [0:6]out4; //4th seven segment 
+wire [3:0]sec1; 
+wire [3:0]sec2;
+ wire [3:0]min1; 
+wire [3:0]min2; 
+integer count=0; 
+always@(posedge(clk),negedge(rst)) 
+begin if(!rst)
+ begin count=0; 
+out=1'b0; 
+end
+ else
+ begin if(count==25000000) //for 50MHz internal clock
+ begin out=~out; 
+count=0; 
+end 
+else
+ count=count+1; 
+end 
+end
+ always@(posedge(out),negedge(rst)) 
+begin 
+if(!rst) 
+begin sec=0; min=0;
+ end 
+else 
+begin
+sec=sec+1;  	 	 	if(sec>59) 
+	 	 	 	begin 
+ 	 	 	 	min=min+1;  	 	 	 	sec=0;  	 	 	end  	 	end 
+	 	end 
+ 	assign sec1=sec%10;  	assign sec2=sec/10;  	assign min1=min%10;  	assign min2=min/10;  	always@(sec1,sec2,min1,min2) 
+	 	begin 
+	 	 	case(sec1)         //assigning 1st seven segment from 0-9 
+	 	 	4'b0000: out1=7'b0000001; 
+	 	 	4'b0001: out1=7'b1001111; 
+	 	 	4'b0010: out1=7'b0010010; 
+	 	 	4'b0011: out1=7'b0000110; 
+	 	 	4'b0100: out1=7'b1001100; 
+	 	 	4'b0101: out1=7'b0100100; 
+	 	 	4'b0110: out1=7'b0100000; 
+	 	 	4'b0111: out1=7'b0001111; 
+	 	 	4'b1000: out1=7'b0000000; 
+	 	 	4'b1001: out1=7'b0000100; 
+	 	 	endcase 
+	 	 	case(sec2)         //assigning 2nd seven segment from 0-5 
+	 	 	4'b0000: out2=7'd1; 
+	 	 	4'b0001: out2=7'd79; 
+	 	 	4'b0010: out2=7'd18; 
+	 	 	4'b0011: out2=7'd6; 
+	 	 	4'b0100: out2=7'd76; 
+	 	 	4'b0101: out2=7'd36; 
+	 	 	endcase 
+	 	 	case(min1)         //assigning 3rd seven segment from 0-9 
+	 	 	4'b0000: out3=7'b0000001; 
+	 	 	4'b0001: out3=7'b1001111; 
+	 	 	4'b0010: out3=7'b0010010; 
+	 	 	4'b0011: out3=7'b0000110; 
+	 	 	4'b0100: out3=7'b1001100; 
+	 	 	4'b0101: out3=7'b0100100; 
+	 	 	4'b0110: out3=7'b0100000; 
+	 	 	4'b0111: out3=7'b0001111; 
+	 	 	4'b1000: out3=7'b0000000; 
+	 	 	4'b1001: out3=7'b0000100; 
+	 	 	endcase  	  
+	 	case(min2)         //assigning 4th seven segment from 0-5 
+	 	4'b0000: out4=7'd1; 
+	 	4'b0001: out4=7'd79; 
+	 	4'b0010: out4=7'd18; 
+	 	4'b0011: out4=7'd6;
